@@ -1,0 +1,19 @@
+RESPONSIBILITIES
+We attach great importance to the quality and accuracy of the data we share. However, topoexport.com cannot be held responsible for any anomalies, inconsistencies, or inaccuracies found in the exported files. It is necessary for users to conduct rigorous data checks with surveyors before using them to avoid any errors, approximations, or inconsistencies.
+_____________________________
+
+LICENSES AND COPYRIGHTS
+
+The following licenses and copyrights apply to the various elements on our website:
+Front-end:
+    Interactive Map: Leaflet and OpenStreetMap contributions.
+
+Modeling Sources
+  Buildings 3D: Instituto Geográfico Nacional - Base Topográfica Nacional 2025 (CC BY 4.0)
+  Parcels: Dirección General del Catastro - Cartografía Catastral 2026 (Licencia de acceso y uso de los servicios y conjuntos de datos INSPIRE)
+  Roads: Instituto Geográfico Nacional - Base Topográfica Nacional 2025 (CC BY 4.0)
+  Railways: Instituto Geográfico Nacional - Base Topográfica Nacional 2025 (CC BY 4.0)
+  Waterways: Instituto Geográfico Nacional - Base Topográfica Nacional 2025 (CC BY 4.0)
+  Trees: OpenStreetMap - Trees 2025 (ODbL)
+  Digital Terrain Model (2 m): Gobierno de España y Comunidades autónomas - Modelo Digital del Terreno - MDT02 2021 (CC-BY 4.0)
+  Green Areas: OpenStreetMap - Green Area 2025 (ODbL)

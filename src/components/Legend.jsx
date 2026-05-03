@@ -1,0 +1,196 @@
+import { useEffect, useState } from 'react';
+
+const STROKE = '#1F3A2A';        // brand dark green — used for housing dots, metro squares, ring strokes
+const SAGE = '#8FAA90';          // tree green
+const SAND = '#B5A992';          // warm grey/brown — lamps & food-truck rectangles
+
+const MOBILE_QUERY = '(max-width: 767px)';
+
+const LEGEND_ITEMS = [
+  { type: 'circle', color: SAND,   size: 7,            label: 'Street Lamps / Lighting' },
+  { type: 'circle', color: SAGE,   size: 9,            label: 'Trees & Vegetation' },
+  { type: 'circle', color: STROKE, size: 9,            label: 'Housing / Residential' },
+  { type: 'ring',   color: STROKE, size: 11,           label: 'Shops, Cinemas & Leisure' },
+  { type: 'rect',   color: SAND,   w: 14, h: 6,        label: 'Food Trucks / Temporary Stalls' },
+  { type: 'square', color: STROKE, size: 9,            label: 'Metro / Public Transit' },
+];
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia(MOBILE_QUERY).matches;
+  });
+
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_QUERY);
+    const handler = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  return isMobile;
+}
+
+function LegendIcon({ item }) {
+  const base = { flexShrink: 0, display: 'inline-block' };
+
+  if (item.type === 'circle') {
+    return (
+      <span
+        style={{
+          ...base,
+          width: item.size,
+          height: item.size,
+          borderRadius: '50%',
+          backgroundColor: item.color,
+        }}
+      />
+    );
+  }
+
+  if (item.type === 'ring') {
+    return (
+      <span
+        style={{
+          ...base,
+          width: item.size,
+          height: item.size,
+          borderRadius: '50%',
+          border: `1.5px solid ${item.color}`,
+          backgroundColor: 'transparent',
+          boxSizing: 'border-box',
+        }}
+      />
+    );
+  }
+
+  if (item.type === 'square') {
+    return (
+      <span
+        style={{
+          ...base,
+          width: item.size,
+          height: item.size,
+          backgroundColor: item.color,
+        }}
+      />
+    );
+  }
+
+  if (item.type === 'rect') {
+    return (
+      <span
+        style={{
+          ...base,
+          width: item.w,
+          height: item.h,
+          backgroundColor: item.color,
+        }}
+      />
+    );
+  }
+
+  return null;
+}
+
+function LegendBody() {
+  return (
+    <>
+      <h2
+        className="font-display text-base font-semibold uppercase tracking-[0.25em]"
+        style={{ color: STROKE }}
+      >
+        Gran Vía, Madrid
+      </h2>
+      <p
+        className="mt-1.5 text-[11px] uppercase tracking-[0.3em]"
+        style={{ color: STROKE, opacity: 0.55 }}
+      >
+        Sensory Re-Reading · 2026
+      </p>
+
+      <ul
+        className="mt-6 space-y-3"
+        style={{ color: STROKE, fontSize: 12.5, lineHeight: 1.55 }}
+      >
+        {LEGEND_ITEMS.map((item) => (
+          <li key={item.label} className="flex items-center gap-3.5">
+            <span
+              style={{
+                width: 18,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <LegendIcon item={item} />
+            </span>
+            <span>{item.label}</span>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+export default function Legend() {
+  const isMobile = useIsMobile();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Desktop layout — original floating glass card, top-right.
+  if (!isMobile) {
+    return (
+      <div
+        className="pointer-events-none absolute right-6 top-6 z-20 w-[22rem] rounded-2xl border border-white/40 p-6 shadow-md"
+        style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.35)',
+          WebkitBackdropFilter: 'blur(14px) saturate(140%)',
+          backdropFilter: 'blur(14px) saturate(140%)',
+        }}
+      >
+        <LegendBody />
+      </div>
+    );
+  }
+
+  // Mobile — small "Legend" pill in the bottom-right that expands into
+  // a compact panel anchored above it. Keeps the narrow viewport
+  // uncluttered until the user explicitly asks for the key.
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setMobileOpen((v) => !v)}
+        aria-expanded={mobileOpen}
+        aria-label={mobileOpen ? 'Close legend' : 'Open legend'}
+        className="fixed bottom-4 right-4 z-20 flex items-center gap-2 rounded-full border border-white/40 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] shadow-md"
+        style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          WebkitBackdropFilter: 'blur(14px) saturate(140%)',
+          backdropFilter: 'blur(14px) saturate(140%)',
+          color: STROKE,
+          marginBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
+      >
+        <span aria-hidden style={{ fontSize: 12 }}>
+          {mobileOpen ? '×' : 'ⓘ'}
+        </span>
+        Legend
+      </button>
+
+      {mobileOpen && (
+        <div
+          className="fixed bottom-16 right-4 z-20 w-[78vw] max-w-[320px] rounded-2xl border border-white/40 p-5 shadow-lg"
+          style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.85)',
+            WebkitBackdropFilter: 'blur(16px) saturate(140%)',
+            backdropFilter: 'blur(16px) saturate(140%)',
+            marginBottom: 'env(safe-area-inset-bottom, 0px)',
+          }}
+        >
+          <LegendBody />
+        </div>
+      )}
+    </>
+  );
+}

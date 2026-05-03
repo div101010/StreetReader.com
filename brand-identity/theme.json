@@ -1,0 +1,12 @@
+{
+  "project": "StreetReader",
+  "palette": {
+    "beige_bg": "#FAF5EB",
+    "deep_green": "#306B47",
+    "white_overlay": "rgba(255, 255, 255, 0.7)"
+  },
+  "typography": {
+    "font_family": "Darker Grotesque",
+    "weights": ["300", "400", "600"]
+  }
+}
