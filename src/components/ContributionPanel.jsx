@@ -1,21 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from '../lib/translations.jsx';
 
 const STROKE = '#1F3A2A';
 const CREAM = '#F5F2E8';
 const TYPES = ['Sensory', 'Memory', 'Complaint'];
 
-// Per-category prompt — keeps the user honest about what kind of detail
-// belongs in each bucket. Shown italic under the category toggles.
-const TYPE_GUIDANCE = {
-  Sensory:
-    'What do you smell, hear, or feel in this spot? (e.g., loud traffic, jasmine, wind tunnels).',
-  Memory:
-    'What happened here in the past? A personal history or a vanished landmark.',
-  Complaint:
-    'What is making the urban experience difficult here? (e.g., broken pavement, lack of seating).',
-};
-
 export default function ContributionPanel({ open, onSubmit, onCancel, error }) {
+  const { t } = useTranslation();
   const [type, setType] = useState('Sensory');
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -92,7 +83,7 @@ export default function ContributionPanel({ open, onSubmit, onCancel, error }) {
             margin: 0,
           }}
         >
-          Pin a story
+          {t('pin.eyebrow')}
         </p>
         <h2
           style={{
@@ -103,17 +94,17 @@ export default function ContributionPanel({ open, onSubmit, onCancel, error }) {
             color: STROKE,
           }}
         >
-          What happened here?
+          {t('pin.heading')}
         </h2>
 
         <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-          {TYPES.map((t) => {
-            const selected = type === t;
+          {TYPES.map((typeKey) => {
+            const selected = type === typeKey;
             return (
               <button
-                key={t}
+                key={typeKey}
                 type="button"
-                onClick={() => setType(t)}
+                onClick={() => setType(typeKey)}
                 style={{
                   flex: 1,
                   // 44px-tall tap target on every viewport. Padding alone
@@ -133,7 +124,7 @@ export default function ContributionPanel({ open, onSubmit, onCancel, error }) {
                   transition: 'all 150ms ease',
                 }}
               >
-                {t}
+                {t(`category.${typeKey}`)}
               </button>
             );
           })}
@@ -151,14 +142,14 @@ export default function ContributionPanel({ open, onSubmit, onCancel, error }) {
             opacity: 0.65,
           }}
         >
-          {TYPE_GUIDANCE[type]}
+          {t(`pin.guidance.${type}`)}
         </p>
 
         <textarea
           autoFocus
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Describe the sensory, the memory, the complaint…"
+          placeholder={t('pin.placeholder')}
           rows={5}
           style={{
             width: '100%',
@@ -215,7 +206,7 @@ export default function ContributionPanel({ open, onSubmit, onCancel, error }) {
               transition: 'all 150ms ease',
             }}
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type="submit"
@@ -237,7 +228,7 @@ export default function ContributionPanel({ open, onSubmit, onCancel, error }) {
               transition: 'all 150ms ease',
             }}
           >
-            {submitting ? 'Sharing…' : 'Share Story'}
+            {submitting ? t('pin.submitting') : t('pin.submit')}
           </button>
         </div>
       </form>

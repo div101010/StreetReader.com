@@ -8,6 +8,7 @@ import {
 import * as THREE from 'three';
 import { getCategoryColors } from '../lib/categoryColors.js';
 import { CONFLICT_RADIUS } from '../lib/urbanInsights.js';
+import { useTranslation } from '../lib/translations.jsx';
 
 const GEOJSON_URL = '/export.geojson';
 
@@ -960,6 +961,7 @@ function FitCamera({ bbox }) {
 }
 
 function LoadingOverlay({ visible }) {
+  const { t } = useTranslation();
   if (!visible) return null;
   return (
     <div
@@ -977,7 +979,7 @@ function LoadingOverlay({ visible }) {
           className="mt-6 text-xs uppercase tracking-[0.4em]"
           style={{ color: STROKE_COLOR, opacity: 0.55 }}
         >
-          Initializing map
+          {t('map.loading')}
         </p>
       </div>
     </div>

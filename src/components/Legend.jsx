@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from '../lib/translations.jsx';
 
 const STROKE = '#1F3A2A';        // brand dark green — used for housing dots, metro squares, ring strokes
 const SAGE = '#8FAA90';          // tree green
@@ -6,13 +7,15 @@ const SAND = '#B5A992';          // warm grey/brown — lamps & food-truck recta
 
 const MOBILE_QUERY = '(max-width: 767px)';
 
+// Each row carries an i18n key for the label; the actual translation is
+// resolved at render-time inside <LegendBody>.
 const LEGEND_ITEMS = [
-  { type: 'circle', color: SAND,   size: 7,            label: 'Street Lamps / Lighting' },
-  { type: 'circle', color: SAGE,   size: 9,            label: 'Trees & Vegetation' },
-  { type: 'circle', color: STROKE, size: 9,            label: 'Housing / Residential' },
-  { type: 'ring',   color: STROKE, size: 11,           label: 'Shops, Cinemas & Leisure' },
-  { type: 'rect',   color: SAND,   w: 14, h: 6,        label: 'Food Trucks / Temporary Stalls' },
-  { type: 'square', color: STROKE, size: 9,            label: 'Metro / Public Transit' },
+  { type: 'circle', color: SAND,   size: 7,            tKey: 'legend.item.lamps' },
+  { type: 'circle', color: SAGE,   size: 9,            tKey: 'legend.item.trees' },
+  { type: 'circle', color: STROKE, size: 9,            tKey: 'legend.item.housing' },
+  { type: 'ring',   color: STROKE, size: 11,           tKey: 'legend.item.shops' },
+  { type: 'rect',   color: SAND,   w: 14, h: 6,        tKey: 'legend.item.foodTrucks' },
+  { type: 'square', color: STROKE, size: 9,            tKey: 'legend.item.metro' },
 ];
 
 function useIsMobile() {
@@ -94,19 +97,20 @@ function LegendIcon({ item }) {
 }
 
 function LegendBody() {
+  const { t } = useTranslation();
   return (
     <>
       <h2
         className="font-display text-base font-semibold uppercase tracking-[0.25em]"
         style={{ color: STROKE }}
       >
-        Gran Vía, Madrid
+        {t('legend.title')}
       </h2>
       <p
         className="mt-1.5 text-[11px] uppercase tracking-[0.3em]"
         style={{ color: STROKE, opacity: 0.55 }}
       >
-        Sensory Re-Reading · 2026
+        {t('legend.subtitle')}
       </p>
 
       <ul
@@ -114,7 +118,7 @@ function LegendBody() {
         style={{ color: STROKE, fontSize: 12.5, lineHeight: 1.55 }}
       >
         {LEGEND_ITEMS.map((item) => (
-          <li key={item.label} className="flex items-center gap-3.5">
+          <li key={item.tKey} className="flex items-center gap-3.5">
             <span
               style={{
                 width: 18,
@@ -125,7 +129,7 @@ function LegendBody() {
             >
               <LegendIcon item={item} />
             </span>
-            <span>{item.label}</span>
+            <span>{t(item.tKey)}</span>
           </li>
         ))}
       </ul>
@@ -136,6 +140,7 @@ function LegendBody() {
 export default function Legend() {
   const isMobile = useIsMobile();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t } = useTranslation();
 
   // Desktop layout — original floating glass card, top-right.
   if (!isMobile) {
@@ -162,7 +167,7 @@ export default function Legend() {
         type="button"
         onClick={() => setMobileOpen((v) => !v)}
         aria-expanded={mobileOpen}
-        aria-label={mobileOpen ? 'Close legend' : 'Open legend'}
+        aria-label={mobileOpen ? t('legend.closeAria') : t('legend.openAria')}
         className="fixed bottom-4 right-4 z-20 flex items-center gap-2 rounded-full border border-white/40 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] shadow-md"
         style={{
           backgroundColor: 'rgba(255, 255, 255, 0.7)',
@@ -175,7 +180,7 @@ export default function Legend() {
         <span aria-hidden style={{ fontSize: 12 }}>
           {mobileOpen ? '×' : 'ⓘ'}
         </span>
-        Legend
+        {t('legend.openMobile')}
       </button>
 
       {mobileOpen && (

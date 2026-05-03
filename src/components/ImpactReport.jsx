@@ -1,13 +1,7 @@
 import { useState } from 'react';
 import { getCategoryColors } from '../lib/categoryColors.js';
 import EvidenceModal from './EvidenceModal.jsx';
-
-const TYPE_LABEL = {
-  Sensory: 'Sensory Cluster',
-  Memory: 'Memory Cluster',
-  Complaint: 'Complaint Cluster',
-  Conflict: 'Protection Zone',
-};
+import { useTranslation } from '../lib/translations.jsx';
 
 const TYPE_BULLET = {
   Sensory: '▸',
@@ -17,6 +11,7 @@ const TYPE_BULLET = {
 };
 
 export default function ImpactReport({ insights = [], onBack = () => {} }) {
+  const { t } = useTranslation();
   const isEmpty = insights.length === 0;
   const [evidenceFor, setEvidenceFor] = useState(null);
 
@@ -31,17 +26,17 @@ export default function ImpactReport({ insights = [], onBack = () => {} }) {
           paddingBottom: '3px',
         }}
       >
-        ←&nbsp;&nbsp;Back to Experiences
+        {t('impact.back')}
       </button>
 
       <p className="mb-1 text-xs font-medium uppercase tracking-[0.25em] text-brand-green/60">
-        Data Map
+        {t('impact.eyebrow')}
       </p>
       <h2 className="mb-2 font-display text-2xl font-semibold leading-tight text-brand-green">
-        Actionable Urban Plan
+        {t('impact.heading')}
       </h2>
       <p className="mb-5 text-xs italic leading-snug text-brand-green/65">
-        Generated from clusters of 3+ stories within a 40-metre radius.
+        {t('impact.subhead')}
       </p>
 
       {isEmpty ? (
@@ -50,8 +45,7 @@ export default function ImpactReport({ insights = [], onBack = () => {} }) {
           style={{ borderColor: 'rgba(31, 58, 42, 0.25)' }}
         >
           <p className="font-display text-sm italic leading-relaxed text-brand-green/70">
-            Not enough clustered data yet. Pin more stories of the same
-            category within 40&nbsp;m of each other to generate the plan.
+            {t('impact.empty')}
           </p>
         </div>
       ) : (
@@ -68,7 +62,7 @@ export default function ImpactReport({ insights = [], onBack = () => {} }) {
               : colors.bg;
             const tagColor = isConflict ? '#1F3A2A' : colors.primary;
             const bullet = TYPE_BULLET[insight.type] || '▸';
-            const zonePrefix = isConflict ? 'Segment' : 'Zone';
+            const zonePrefix = isConflict ? t('impact.segment') : t('impact.zone');
 
             return (
               <li
@@ -106,7 +100,7 @@ export default function ImpactReport({ insights = [], onBack = () => {} }) {
                   className="font-display text-[11px] font-semibold uppercase tracking-[0.22em]"
                   style={{ color: tagColor }}
                 >
-                  {TYPE_LABEL[insight.type] || insight.type}
+                  {t(`impact.cluster.${insight.type}`)}
                 </p>
 
                 <p className="mt-3 flex items-start gap-2 text-sm leading-relaxed text-brand-green/85">
@@ -129,8 +123,9 @@ export default function ImpactReport({ insights = [], onBack = () => {} }) {
                   >
                     <span>
                       {insight.count}
-                      {insight.count === 1 ? ' story' : ' stories'}
-                      &nbsp;·&nbsp;clustered
+                      {' '}
+                      {insight.count === 1 ? t('common.story') : t('common.stories')}
+                      &nbsp;·&nbsp;{t('impact.clustered')}
                     </span>
                     <span
                       aria-hidden
@@ -151,7 +146,7 @@ export default function ImpactReport({ insights = [], onBack = () => {} }) {
         className="mt-4 text-[10px] italic leading-relaxed text-brand-green/55"
         style={{ fontFamily: '"Darker Grotesque", system-ui, sans-serif' }}
       >
-        Data is spatially aggregated to protect participant privacy.
+        {t('impact.footer')}
       </p>
 
       <EvidenceModal

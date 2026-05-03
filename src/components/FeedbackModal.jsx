@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { submitPlatformFeedback } from '../lib/supabase.js';
+import { useTranslation } from '../lib/translations.jsx';
 
 const STROKE = '#1F3A2A';
 const CREAM = '#F5F2E8';
 
 export default function FeedbackModal({ open, onClose = () => {} }) {
+  const { t } = useTranslation();
   const [text, setText] = useState('');
   const [status, setStatus] = useState('idle'); // idle | submitting | success | error
   const [errorMsg, setErrorMsg] = useState('');
@@ -104,7 +106,7 @@ export default function FeedbackModal({ open, onClose = () => {} }) {
                 margin: 0,
               }}
             >
-              Platform Feedback
+              {t('feedback.eyebrow')}
             </p>
             <h2
               style={{
@@ -115,7 +117,7 @@ export default function FeedbackModal({ open, onClose = () => {} }) {
                 color: STROKE,
               }}
             >
-              Help us evolve StreetReader
+              {t('feedback.heading')}
             </h2>
             <p
               style={{
@@ -127,14 +129,13 @@ export default function FeedbackModal({ open, onClose = () => {} }) {
                 opacity: 0.7,
               }}
             >
-              How can this platform better represent the lived reality of
-              Madrid?
+              {t('feedback.subtext')}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('common.close')}
             style={{
               flexShrink: 0,
               // 44px hit target — meets the iOS HIG minimum and matches
@@ -179,7 +180,7 @@ export default function FeedbackModal({ open, onClose = () => {} }) {
                 margin: 0,
               }}
             >
-              Submitted
+              {t('feedback.success.eyebrow')}
             </p>
             <p
               style={{
@@ -190,7 +191,7 @@ export default function FeedbackModal({ open, onClose = () => {} }) {
                 color: STROKE,
               }}
             >
-              Thank you for contributing to the research!
+              {t('feedback.success.title')}
             </p>
             <p
               style={{
@@ -201,7 +202,7 @@ export default function FeedbackModal({ open, onClose = () => {} }) {
                 opacity: 0.65,
               }}
             >
-              Your perspective helps shape how StreetReader evolves.
+              {t('feedback.success.body')}
             </p>
           </div>
         ) : (
@@ -218,7 +219,7 @@ export default function FeedbackModal({ open, onClose = () => {} }) {
                 fontWeight: 600,
               }}
             >
-              Your reflection
+              {t('feedback.label')}
             </label>
             <textarea
               id="platform-feedback-textarea"
@@ -227,7 +228,7 @@ export default function FeedbackModal({ open, onClose = () => {} }) {
               onChange={(e) => setText(e.target.value)}
               rows={5}
               maxLength={2000}
-              placeholder="Share what's missing, what feels off, or what could go further…"
+              placeholder={t('feedback.placeholder')}
               disabled={status === 'submitting'}
               className="feedback-textarea"
               style={{
@@ -286,7 +287,7 @@ export default function FeedbackModal({ open, onClose = () => {} }) {
                   opacity: status === 'submitting' ? 0.5 : 1,
                 }}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
@@ -307,7 +308,7 @@ export default function FeedbackModal({ open, onClose = () => {} }) {
                   fontFamily: 'inherit',
                 }}
               >
-                {status === 'submitting' ? 'Sending…' : 'Submit'}
+                {status === 'submitting' ? t('feedback.sending') : t('common.submit')}
               </button>
             </div>
 
@@ -320,7 +321,7 @@ export default function FeedbackModal({ open, onClose = () => {} }) {
                 lineHeight: 1.5,
               }}
             >
-              Submitted anonymously · for research only.
+              {t('feedback.note')}
             </p>
           </form>
         )}

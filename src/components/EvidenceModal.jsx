@@ -1,16 +1,11 @@
 import { useEffect } from 'react';
 import { getCategoryColors } from '../lib/categoryColors.js';
-
-const TYPE_LABEL = {
-  Sensory: 'Sensory',
-  Memory: 'Memory',
-  Complaint: 'Complaint',
-  Conflict: 'Protection Zone',
-};
+import { useTranslation } from '../lib/translations.jsx';
 
 const STROKE = '#1F3A2A';
 
 export default function EvidenceModal({ insight, onClose = () => {} }) {
+  const { t } = useTranslation();
   // Esc to close.
   useEffect(() => {
     if (!insight) return;
@@ -65,24 +60,26 @@ export default function EvidenceModal({ insight, onClose = () => {} }) {
               className="text-[10px] font-semibold uppercase text-brand-green/60"
               style={{ letterSpacing: '0.28em' }}
             >
-              Lived Evidence
+              {t('evidence.eyebrow')}
             </p>
             <h2 className="mt-0.5 font-display text-2xl font-bold leading-tight text-brand-green">
-              {insight.zone || 'Gran Vía corridor'}
+              {insight.zone || t('evidence.zoneFallback')}
             </h2>
             <p
               className="mt-2 font-display text-[11px] font-semibold uppercase tracking-[0.22em]"
               style={{ color: tagColor }}
             >
-              {TYPE_LABEL[insight.type] || insight.type} ·{' '}
+              {t(`category.${insight.type}`)} ·{' '}
               {insight.count ?? stories.length}{' '}
-              {(insight.count ?? stories.length) === 1 ? 'story' : 'stories'}
+              {(insight.count ?? stories.length) === 1
+                ? t('common.story')
+                : t('common.stories')}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('common.close')}
             className="flex h-8 w-8 items-center justify-center rounded-full text-lg leading-none transition hover:bg-white/40"
             style={{
               color: STROKE,
@@ -102,7 +99,7 @@ export default function EvidenceModal({ insight, onClose = () => {} }) {
         <ul className="flex-1 space-y-3 overflow-y-auto pr-1">
           {stories.length === 0 ? (
             <li className="text-sm italic leading-relaxed text-brand-green/65">
-              No stories on file for this cluster.
+              {t('evidence.empty')}
             </li>
           ) : (
             stories.map((story, idx) => {
@@ -126,7 +123,7 @@ export default function EvidenceModal({ insight, onClose = () => {} }) {
                         letterSpacing: '0.3em',
                       }}
                     >
-                      {TYPE_LABEL[story.type] || story.type}
+                      {t(`category.${story.type}`)}
                     </p>
                   )}
                   <p
@@ -144,7 +141,7 @@ export default function EvidenceModal({ insight, onClose = () => {} }) {
         <p
           className="mt-4 text-[10px] italic leading-relaxed text-brand-green/55"
         >
-          Stories shown without authorship or timestamps · privacy-aggregated.
+          {t('evidence.footer')}
         </p>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from '../lib/translations.jsx';
 
 const BEIGE = '#FAF5EB';
 const STROKE = '#1F3A2A';
@@ -7,6 +8,7 @@ const STROKE = '#1F3A2A';
 // Skippable: any click, scroll, or keypress triggers an early exit.
 export default function IntroAnimation({ onComplete = () => {} }) {
   const [phase, setPhase] = useState('enter'); // 'enter' | 'hold' | 'exit'
+  const { t } = useTranslation();
 
   // Auto-advance timeline.
   useEffect(() => {
@@ -88,7 +90,7 @@ export default function IntroAnimation({ onComplete = () => {} }) {
             'opacity 1200ms ease-out 350ms, transform 1200ms ease-out 350ms',
         }}
       >
-        Perceived Reality v/s Lived Reality
+        {t('intro.subtitle')}
       </p>
     </div>
   );

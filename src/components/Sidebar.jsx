@@ -3,10 +3,12 @@ import AboutPanel from './AboutPanel.jsx';
 import LivedExperiences from './LivedExperiences.jsx';
 import ImpactReport from './ImpactReport.jsx';
 import FeedbackModal from './FeedbackModal.jsx';
+import LanguageToggle from './LanguageToggle.jsx';
+import { useTranslation } from '../lib/translations.jsx';
 
 const TABS = [
-  { id: 'about', label: 'About' },
-  { id: 'experiences', label: 'Experiences' },
+  { id: 'about', tKey: 'sidebar.tab.about' },
+  { id: 'experiences', tKey: 'sidebar.tab.experiences' },
 ];
 
 const MOBILE_QUERY = '(max-width: 767px)';
@@ -50,6 +52,7 @@ export default function Sidebar({
   const inDataMap = viewMode === 'datamap';
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
   // Mobile starts collapsed so the map is the focus; desktop is always open.
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -82,27 +85,33 @@ export default function Sidebar({
         <h1 className="font-display text-4xl font-semibold leading-none tracking-tight text-brand-green sm:text-5xl">
           StreetReader
         </h1>
-        {isMobile && (
-          <button
-            type="button"
-            onClick={() => setMobileOpen(false)}
-            aria-label="Close menu"
-            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-lg leading-none text-brand-green"
-            style={{
-              border: '1px solid rgba(31, 58, 42, 0.25)',
-              backgroundColor: 'rgba(255, 255, 255, 0.4)',
-            }}
-          >
-            ×
-          </button>
-        )}
+        <div className="flex flex-shrink-0 items-center gap-3">
+          {/* Desktop: inline EN | ES toggle in the header. Mobile: rendered
+              from App.jsx as a floating pill so it stays reachable when the
+              drawer is closed. */}
+          {!isMobile && <LanguageToggle variant="inline" />}
+          {isMobile && (
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              aria-label={t('sidebar.closeMenu')}
+              className="flex h-11 w-11 items-center justify-center rounded-full text-lg leading-none text-brand-green"
+              style={{
+                border: '1px solid rgba(31, 58, 42, 0.25)',
+                backgroundColor: 'rgba(255, 255, 255, 0.4)',
+              }}
+            >
+              ×
+            </button>
+          )}
+        </div>
       </header>
 
       {!inDataMap && currentLocation && (
         <div className="mb-4 rounded-xl border border-brand-green/30 bg-white/40 p-3">
           <div className="flex items-baseline justify-between gap-2">
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-green/65">
-              Current Location
+              {t('sidebar.currentLocation')}
             </p>
             <button
               type="button"
@@ -132,20 +141,20 @@ export default function Sidebar({
 
       {!inDataMap && (
         <nav className="mb-5 flex gap-1 rounded-full border border-white/30 bg-white/20 p-1">
-          {TABS.map((t) => {
-            const active = activeTab === t.id;
+          {TABS.map((tab) => {
+            const active = activeTab === tab.id;
             return (
               <button
-                key={t.id}
+                key={tab.id}
                 type="button"
-                onClick={() => onChangeTab(t.id)}
+                onClick={() => onChangeTab(tab.id)}
                 className="flex-1 rounded-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] transition md:py-1.5"
                 style={{
                   backgroundColor: active ? '#1F3A2A' : 'transparent',
                   color: active ? '#FAF5EB' : '#1F3A2A',
                 }}
               >
-                {t.label}
+                {t(tab.tKey)}
               </button>
             );
           })}
@@ -189,11 +198,11 @@ export default function Sidebar({
           border: '1px solid rgba(31, 58, 42, 0.25)',
         }}
       >
-        Platform Feedback
+        {t('sidebar.platformFeedback')}
       </button>
 
       <footer className="mt-4 border-t border-white/30 pt-4 text-xs text-brand-green/60">
-        Gran Vía, Madrid · 2026
+        {t('sidebar.footer')}
       </footer>
     </>
   );
@@ -227,7 +236,7 @@ export default function Sidebar({
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
-          aria-label="Open menu"
+          aria-label={t('sidebar.openMenu')}
           className="fixed left-4 top-4 z-30 flex min-h-[44px] items-center gap-2 rounded-full border border-white/40 px-4 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-green shadow-md"
           style={{
             backgroundColor: 'rgba(255, 255, 255, 0.7)',
@@ -241,7 +250,7 @@ export default function Sidebar({
             <span style={{ width: 14, height: 1.5, background: '#1F3A2A' }} />
             <span style={{ width: 14, height: 1.5, background: '#1F3A2A' }} />
           </span>
-          Menu
+          {t('sidebar.menu')}
         </button>
       )}
 

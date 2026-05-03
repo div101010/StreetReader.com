@@ -1,24 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { getCategoryColors } from '../lib/categoryColors.js';
+import { useTranslation } from '../lib/translations.jsx';
 
-const TYPE_LABEL = {
-  Sensory: 'Sensory',
-  Memory: 'Memory',
-  Complaint: 'Complaint',
-  Story: 'Story',
-};
-
-function timeAgo(iso) {
+function timeAgo(iso, t) {
   if (!iso) return '';
   const ms = Date.now() - new Date(iso).getTime();
   const s = Math.floor(ms / 1000);
-  if (s < 60) return 'just now';
+  if (s < 60) return t('common.justNow');
   const m = Math.floor(s / 60);
-  if (m < 60) return `${m} min ago`;
+  if (m < 60) return `${m} ${t('common.minAgo')}`;
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h} hr ago`;
+  if (h < 24) return `${h} ${t('common.hrAgo')}`;
   const d = Math.floor(h / 24);
-  return `${d} day${d > 1 ? 's' : ''} ago`;
+  return `${d} ${d > 1 ? t('common.daysAgo') : t('common.dayAgo')}`;
 }
 
 export default function LivedExperiences({
@@ -35,6 +29,7 @@ export default function LivedExperiences({
   onSwitchToDataMap = () => {},
 }) {
   const refs = useRef({});
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!highlightedId) return;
@@ -49,15 +44,18 @@ export default function LivedExperiences({
   return (
     <div className="flex h-full flex-col">
       <p className="mb-3 text-xs italic leading-snug text-brand-green/65">
-        Click anywhere on the map to share a story.
+        {t('lived.tapHint')}
       </p>
 
       <div className="mb-4 flex items-baseline justify-between gap-2">
         <p className="text-xs font-medium uppercase tracking-[0.25em] text-brand-green/60">
-          Lived Experiences
+          {t('lived.title')}
         </p>
         <span className="text-[10px] uppercase tracking-[0.18em] text-brand-green/45">
-          {userExperiences.length} {userExperiences.length === 1 ? 'story' : 'stories'}
+          {userExperiences.length}{' '}
+          {userExperiences.length === 1
+            ? t('common.story')
+            : t('common.stories')}
         </span>
       </div>
 
@@ -71,7 +69,7 @@ export default function LivedExperiences({
           color: placingMode ? '#FAF5EB' : '#1F3A2A',
         }}
       >
-        {placingMode ? '✕  Cancel — pick a spot on the map' : '+  Add your own story'}
+        {placingMode ? t('lived.cancel') : t('lived.add')}
       </button>
 
       {isEmpty ? (
@@ -83,10 +81,10 @@ export default function LivedExperiences({
             className="text-[10px] font-semibold uppercase text-brand-green/55"
             style={{ letterSpacing: '0.3em' }}
           >
-            The map is currently silent
+            {t('lived.empty.eyebrow')}
           </p>
           <p className="font-display text-sm italic leading-relaxed text-brand-green/70">
-            Be the first to share a lived experience.
+            {t('lived.empty.body')}
           </p>
         </div>
       ) : (
@@ -118,10 +116,10 @@ export default function LivedExperiences({
                       className="font-display text-sm font-semibold"
                       style={{ color: colors.primary }}
                     >
-                      {TYPE_LABEL[s.type] || s.type || 'Story'}
+                      {t(`category.${s.type || 'Story'}`)}
                     </span>
                     <span className="text-[10px] uppercase tracking-[0.2em] text-brand-green/55">
-                      {timeAgo(s.createdAt)}
+                      {timeAgo(s.createdAt, t)}
                     </span>
                   </div>
                   <p className="mt-2 text-sm leading-snug text-brand-green/85">
@@ -133,7 +131,7 @@ export default function LivedExperiences({
                       onClick={() => onDeleteExperience(s.id)}
                       className="mt-2 text-[10px] uppercase tracking-[0.2em] text-brand-green/55 hover:text-brand-green"
                     >
-                      delete{isAdmin && !owns ? ' (admin)' : ''}
+                      {t('common.delete')}{isAdmin && !owns ? ' (admin)' : ''}
                     </button>
                   )}
                 </li>
@@ -156,13 +154,13 @@ export default function LivedExperiences({
         >
           <div className="flex items-center gap-2 text-sm font-semibold">
             <span>{vizMode ? '◉' : '◯'}</span>
-            <span>Reveal Lived Intensity</span>
+            <span>{t('lived.viz.title')}</span>
           </div>
           <p
             className="mt-1 pl-5 text-[10px] uppercase tracking-[0.18em]"
             style={{ opacity: vizMode ? 0.75 : 0.6 }}
           >
-            Visualize real-time sensory & grievance hotspots
+            {t('lived.viz.subtitle')}
           </p>
         </button>
         <button
@@ -177,13 +175,13 @@ export default function LivedExperiences({
         >
           <div className="flex items-center gap-2 text-sm font-semibold">
             <span>◯</span>
-            <span>Urban Impact Strategy</span>
+            <span>{t('lived.datamap.title')}</span>
           </div>
           <p
             className="mt-1 pl-5 text-[10px] uppercase tracking-[0.18em]"
             style={{ opacity: 0.6 }}
           >
-            Algorithmic plan for institutional intervention
+            {t('lived.datamap.subtitle')}
           </p>
         </button>
       </div>

@@ -16,17 +16,27 @@ const LANDMARK_ANCHORS = [
   { name: 'Metropolis',       position: [ 540,  310] },
 ];
 
-const INSIGHT_TEMPLATES = {
-  Sensory:
-    'Sensory Intervention: implement acoustic buffering or green rest zones.',
-  Memory:
-    'Social Heritage Site: recommend community signage or digital plaques.',
-  Complaint:
-    'Immediate Infrastructure Correction: lighting / access audit required.',
+// Default English-only translator — used when no `t()` is passed in. The
+// app always passes one, but the fallback keeps the function callable
+// from tests / scripts without pulling in the React i18n context.
+const DEFAULT_T = (key, vars) => {
+  const fallback = {
+    'insight.Sensory':
+      'Sensory Intervention: implement acoustic buffering or green rest zones.',
+    'insight.Memory':
+      'Social Heritage Site: recommend community signage or digital plaques.',
+    'insight.Complaint':
+      'Immediate Infrastructure Correction: lighting / access audit required.',
+    'insight.Conflict':
+      'High-Priority Protection Zone: a complaint cluster overlaps a memory cluster — balance heritage preservation with infrastructure repair.',
+    'zone.vicinity': 'Vicinity of {name}',
+    'zone.approach': '{name} Approach',
+    'evidence.zoneFallback': 'Gran Vía corridor',
+  };
+  const raw = fallback[key] ?? key;
+  if (!vars) return raw;
+  return raw.replace(/\{(\w+)\}/g, (_, k) => (k in vars ? String(vars[k]) : `{${k}}`));
 };
-
-const CONFLICT_INSIGHT =
-  'High-Priority Protection Zone: a complaint cluster overlaps a memory cluster — balance heritage preservation with infrastructure repair.';
 
 function distance(a, b) {
   const dx = a[0] - b[0];
@@ -119,7 +129,7 @@ function detectConflicts(hotspots) {
   return conflicts;
 }
 
-export function generateUrbanInsights(experiences = []) {
+export function generateUrbanInsights(experiences = [], t = DEFAULT_T) {
   const hotspots = clusterByCategory(experiences);
   const conflicts = detectConflicts(hotspots);
 
@@ -129,9 +139,11 @@ export function generateUrbanInsights(experiences = []) {
     insights.push({
       id: h.id,
       type: h.category,
-      text: INSIGHT_TEMPLATES[h.category] || 'Cluster identified — review.',
+      text: t(`insight.${h.category}`),
       count: h.count,
-      zone: lm ? `Vicinity of ${lm.name}` : 'Gran Vía corridor',
+      zone: lm
+        ? t('zone.vicinity', { name: lm.name })
+        : t('evidence.zoneFallback'),
       stories: h.stories,
     });
   }
@@ -140,8 +152,10 @@ export function generateUrbanInsights(experiences = []) {
     insights.push({
       id: c.id,
       type: 'Conflict',
-      text: CONFLICT_INSIGHT,
-      zone: lm ? `${lm.name} Approach` : 'Gran Vía corridor',
+      text: t('insight.Conflict'),
+      zone: lm
+        ? t('zone.approach', { name: lm.name })
+        : t('evidence.zoneFallback'),
       // Conflict surfaces stories from BOTH overlapping clusters so the
       // planner can see the heritage and the grievance side by side.
       stories: [

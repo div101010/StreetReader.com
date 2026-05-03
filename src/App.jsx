@@ -5,6 +5,7 @@ import Compass from './components/Compass.jsx';
 import Legend from './components/Legend.jsx';
 import ContributionPanel from './components/ContributionPanel.jsx';
 import IntroAnimation from './components/IntroAnimation.jsx';
+import LanguageToggle from './components/LanguageToggle.jsx';
 // Single global Supabase instance — defined at module scope in lib/supabase.js
 // and imported here so forceLoadStories can see it without re-creating
 // a client on every render.
@@ -13,8 +14,10 @@ import { getOrCreateUserId, isAdmin } from './lib/userId.js';
 import { fetchOSMLandmarks, fetchOSMBuildings } from './lib/overpass.js';
 import { generateUrbanInsights } from './lib/urbanInsights.js';
 import { MOCK_EXPERIENCES } from './lib/mockExperiences.js';
+import { useTranslation } from './lib/translations.jsx';
 
 export default function App() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('about');
   const [vizMode, setVizMode] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
@@ -29,8 +32,8 @@ export default function App() {
   // Re-derive clusters / hotspots / conflicts / insights every time the
   // experiences list changes. Pure function, no side effects.
   const urbanInsights = useMemo(
-    () => generateUrbanInsights(userExperiences),
-    [userExperiences],
+    () => generateUrbanInsights(userExperiences, t),
+    [userExperiences, t],
   );
   const [placingMode, setPlacingMode] = useState(false);
   const [highlightedExperienceId, setHighlightedExperienceId] = useState(null);
@@ -314,6 +317,13 @@ export default function App() {
       {viewMode !== 'datamap' && <Legend />}
       <Compass rotationY={ROTATION_OFFSET_Y} />
 
+      {/* Language toggle — floating pill on mobile (next to the Menu
+          button); the desktop variant lives inside the sidebar header so
+          it can't overlap the always-visible Legend card. */}
+      <div className="md:hidden">
+        <LanguageToggle variant="floating" />
+      </div>
+
       {/* Navigation hint — visible on both viewports, with a touch-aware
           verb swap on mobile. Sits above the map at bottom-4 and respects
           the iOS safe-area inset so it never tucks under the home bar. */}
@@ -330,9 +340,9 @@ export default function App() {
             fontFamily: '"Darker Grotesque", system-ui, sans-serif',
           }}
         >
-          <span className="md:hidden">Pinch</span>
-          <span className="hidden md:inline">Scroll</span>
-          {' '}to zoom · Drag to move
+          <span className="md:hidden">{t('nav.zoom.pinch')}</span>
+          <span className="hidden md:inline">{t('nav.zoom.scroll')}</span>
+          {' '}{t('nav.zoomDragSuffix')}
         </p>
       </div>
 
@@ -363,7 +373,7 @@ export default function App() {
             boxShadow: '0 6px 18px rgba(31, 58, 42, 0.22)',
           }}
         >
-          ✓  Story pinned to Gran Vía
+          {t('toast.pinned')}
         </div>
       </div>
     </div>
