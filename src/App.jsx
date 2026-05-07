@@ -54,6 +54,7 @@ export default function App() {
   const [submitError, setSubmitError] = useState(null);
   const [successToast, setSuccessToast] = useState(false);
 
+
   // OSM landmark labels fetched live from Overpass on mount.
   const [landmarks, setLandmarks] = useState([]);
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -292,6 +293,7 @@ export default function App() {
         viewMode={viewMode}
         hotspots={urbanInsights.hotspots}
         conflicts={urbanInsights.conflicts}
+        activeTab={activeTab}
       />
 
       <Sidebar

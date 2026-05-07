@@ -203,6 +203,7 @@ function CategoryMarkers({ category, entries, onPick }) {
   const ref = useRef();
   const config = CATEGORIES[category];
   const geometry = useMemo(() => makeCategoryGeometry(config), [config]);
+  const [hoveredIdx, setHoveredIdx] = useState(null);
 
   useEffect(() => {
     if (!ref.current || !entries.length) return;
@@ -226,20 +227,64 @@ function CategoryMarkers({ category, entries, onPick }) {
     onPick?.({ category, position: entry.position, properties: entry.properties });
   };
 
+  // Hover handlers — onPointerMove tracks instance changes within the same
+  // mesh (onPointerOver only fires on first entry, so moving between
+  // instances of one InstancedMesh wouldn't update otherwise).
+  const handlePointerMove = (e) => {
+    e.stopPropagation();
+    const i = e.instanceId;
+    if (i != null && i !== hoveredIdx) setHoveredIdx(i);
+  };
+  const handlePointerOut = (e) => {
+    e.stopPropagation();
+    setHoveredIdx(null);
+  };
+
+  // Resolve the tooltip label: real OSM name → specific tag (shop / tourism
+  // / amenity / railway) → category as a last resort.
+  const hoveredEntry = hoveredIdx != null ? entries[hoveredIdx] : null;
+  const hoveredProps = hoveredEntry?.properties || {};
+  const hoveredLabel =
+    hoveredProps.name ||
+    hoveredProps.shop ||
+    hoveredProps.tourism ||
+    hoveredProps.amenity ||
+    hoveredProps.railway ||
+    category;
+
   return (
-    <instancedMesh
-      ref={ref}
-      args={[geometry, undefined, entries.length]}
-      renderOrder={config.renderOrder}
-      frustumCulled={false}
-      onClick={handleClick}
-    >
-      <meshBasicMaterial
-        color={config.color}
-        side={THREE.DoubleSide}
-        toneMapped={false}
-      />
-    </instancedMesh>
+    <>
+      <instancedMesh
+        ref={ref}
+        args={[geometry, undefined, entries.length]}
+        renderOrder={config.renderOrder}
+        frustumCulled={false}
+        onClick={handleClick}
+        onPointerMove={handlePointerMove}
+        onPointerOut={handlePointerOut}
+      >
+        <meshBasicMaterial
+          color={config.color}
+          side={THREE.DoubleSide}
+          toneMapped={false}
+        />
+      </instancedMesh>
+      {hoveredEntry && (
+        <Html
+          position={[hoveredEntry.position[0], 5, hoveredEntry.position[1]]}
+          center
+          zIndexRange={[200, 0]}
+          style={{ pointerEvents: 'none' }}
+        >
+          <div
+            className="-translate-y-3 whitespace-nowrap rounded bg-white/90 px-3 py-1.5 text-[13px] font-bold shadow-sm"
+            style={{ color: '#1F3A2A' }}
+          >
+            {hoveredLabel}
+          </div>
+        </Html>
+      )}
+    </>
   );
 }
 
@@ -333,6 +378,7 @@ function UserPin({ experience, onPick, vizMode = false }) {
   const glowInnerRef = useRef();
   const [x, z] = experience.position;
   const palette = getCategoryColors(experience.type);
+  const [hovered, setHovered] = useState(false);
 
   useFrame(({ clock }) => {
     // Halo refs only exist when vizMode is on; bail out otherwise to skip
@@ -388,7 +434,18 @@ function UserPin({ experience, onPick, vizMode = false }) {
         </>
       )}
       {/* Core (clickable) — always rendered so each pin is locatable. */}
-      <mesh onClick={handleClick} renderOrder={9}>
+      <mesh
+        onClick={handleClick}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          setHovered(true);
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          setHovered(false);
+        }}
+        renderOrder={9}
+      >
         <circleGeometry args={[2.4, 24]} />
         <meshBasicMaterial
           color={palette.primary}
@@ -397,6 +454,24 @@ function UserPin({ experience, onPick, vizMode = false }) {
           toneMapped={false}
         />
       </mesh>
+      {/* Hover tooltip — same pill style as the OSM markers, but allowed
+          to wrap because story text can be a sentence rather than a name.
+          Tints to the experience's category colour. */}
+      {hovered && experience.text && (
+        <Html
+          position={[0, 0, 0]}
+          center
+          zIndexRange={[200, 0]}
+          style={{ pointerEvents: 'none' }}
+        >
+          <div
+            className="-translate-y-3 max-w-[18rem] whitespace-normal rounded bg-white/90 px-3 py-1.5 text-[13px] font-bold leading-snug shadow-sm"
+            style={{ color: palette.primary }}
+          >
+            {experience.text}
+          </div>
+        </Html>
+      )}
     </group>
   );
 }
@@ -1005,8 +1080,13 @@ export default function MapView({
   viewMode = 'experience',
   hotspots = [],
   conflicts = [],
+  activeTab = 'about',
 }) {
   const inDataMap = viewMode === 'datamap';
+  // Sensory / memory / complaint pins are research data — only surface
+  // them while the contributor is actively in the Experiences tab. The
+  // About tab stays clean (just the physical street markers + buildings).
+  const showUserPins = activeTab === 'experiences';
   const [lastClickPoint, setLastClickPoint] = useState(null);
 
   const handleAnyMapClick = (worldPos) => {
@@ -1167,7 +1247,9 @@ export default function MapView({
               Object.entries(poiGroups).map(([cat, entries]) =>
                 entries.length > 0 ? (
                   <CategoryMarkers
-                    key={cat}
+
+
+                  key={cat}
                     category={cat}
                     entries={entries}
                     onPick={onSelectFeature}
@@ -1176,8 +1258,10 @@ export default function MapView({
               )}
             {!inDataMap && userWorld && <UserMarker position={userWorld} />}
             {/* User-experience pins are also hidden in datamap; the algorithm
-                replaces them with pulsing hotspot rings. */}
-            {!inDataMap && fillGeom && (
+                replaces them with pulsing hotspot rings. They're additionally
+                gated on the active sidebar tab — About keeps the map clean,
+                Experiences reveals the sensory archive. */}
+            {!inDataMap && showUserPins && fillGeom && (
               <UserPins
                 experiences={userExperiences}
                 highlightedId={highlightedExperienceId}

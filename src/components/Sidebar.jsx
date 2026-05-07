@@ -166,7 +166,9 @@ export default function Sidebar({
           <ImpactReport insights={insights} onBack={onBackToExperience} />
         ) : (
           <>
-            {activeTab === 'about' && <AboutPanel />}
+            {activeTab === 'about' && (
+              <AboutPanel onCtaClick={() => onChangeTab('experiences')} />
+            )}
             {activeTab === 'experiences' && (
               <LivedExperiences
                 userExperiences={userExperiences}

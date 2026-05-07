@@ -133,6 +133,20 @@ function LegendBody() {
           </li>
         ))}
       </ul>
+
+      {/* Faint hairline + hover-feature footnote, scoped to the Legend
+          body so it travels with both the desktop card and the mobile
+          collapsible panel. */}
+      <div
+        className="mt-5 h-px"
+        style={{ backgroundColor: 'rgba(31, 58, 42, 0.18)' }}
+      />
+      <p
+        className="mt-3 text-[12px] font-medium italic leading-relaxed opacity-60"
+        style={{ color: STROKE }}
+      >
+        {t('legend.footnote')}
+      </p>
     </>
   );
 }

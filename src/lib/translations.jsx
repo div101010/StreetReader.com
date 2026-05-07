@@ -49,6 +49,9 @@ const dict = {
     'about.pillar.participatory.title': 'Participatory Agency',
     'about.pillar.participatory.blurb':
       'Allowing lived data to drive institutional change.',
+    'about.cta':
+      "The street is more than its infrastructure. Click on 'Experiences' to explore the sensory archive and share your own story.",
+    'about.cta.linkLabel': 'Experiences',
 
     // ── Lived Experiences (sidebar tab) ──────────────────────────────
     'lived.title': 'Lived Experiences',
@@ -156,6 +159,8 @@ const dict = {
     'toast.pinned': '✓  Story pinned to Gran Vía',
     'map.loading': 'Initializing map',
     'intro.subtitle': 'Perceived Reality v/s Lived Reality',
+    'legend.footnote':
+      'Hover over map icons to reveal street details and sensory readings.',
   },
 
   es: {
@@ -198,6 +203,9 @@ const dict = {
     'about.pillar.participatory.title': 'Agencia Participativa',
     'about.pillar.participatory.blurb':
       'Permitir que los datos vividos impulsen el cambio institucional.',
+    'about.cta':
+      'La calle es mucho más que su infraestructura. Pulsa en "Experiencias" para explorar el archivo sensorial y compartir tu propia historia.',
+    'about.cta.linkLabel': 'Experiencias',
 
     // ── Experiencias vividas ─────────────────────────────────────────
     'lived.title': 'Experiencias vividas',
@@ -304,6 +312,8 @@ const dict = {
     'toast.pinned': '✓  Historia anclada en Gran Vía',
     'map.loading': 'Inicializando mapa',
     'intro.subtitle': 'Realidad percibida v/s Realidad vivida',
+    'legend.footnote':
+      'Pasa el ratón sobre los iconos del mapa para descubrir detalles de la calle y lecturas sensoriales.',
   },
 };
 
