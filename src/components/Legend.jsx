@@ -8,14 +8,15 @@ const SAND = '#B5A992';          // warm grey/brown — lamps & food-truck recta
 const MOBILE_QUERY = '(max-width: 767px)';
 
 // Each row carries an i18n key for the label; the actual translation is
-// resolved at render-time inside <LegendBody>.
+// resolved at render-time inside <LegendBody>. Icon dimensions scaled up
+// ~25% to track the larger typography in the legend container.
 const LEGEND_ITEMS = [
-  { type: 'circle', color: SAND,   size: 7,            tKey: 'legend.item.lamps' },
-  { type: 'circle', color: SAGE,   size: 9,            tKey: 'legend.item.trees' },
-  { type: 'circle', color: STROKE, size: 9,            tKey: 'legend.item.housing' },
-  { type: 'ring',   color: STROKE, size: 11,           tKey: 'legend.item.shops' },
-  { type: 'rect',   color: SAND,   w: 14, h: 6,        tKey: 'legend.item.foodTrucks' },
-  { type: 'square', color: STROKE, size: 9,            tKey: 'legend.item.metro' },
+  { type: 'circle', color: SAND,   size: 9,            tKey: 'legend.item.lamps' },
+  { type: 'circle', color: SAGE,   size: 11,           tKey: 'legend.item.trees' },
+  { type: 'circle', color: STROKE, size: 11,           tKey: 'legend.item.housing' },
+  { type: 'ring',   color: STROKE, size: 14,           tKey: 'legend.item.shops' },
+  { type: 'rect',   color: SAND,   w: 18, h: 8,        tKey: 'legend.item.foodTrucks' },
+  { type: 'square', color: STROKE, size: 11,           tKey: 'legend.item.metro' },
 ];
 
 function useIsMobile() {
@@ -59,7 +60,9 @@ function LegendIcon({ item }) {
           width: item.size,
           height: item.size,
           borderRadius: '50%',
-          border: `1.5px solid ${item.color}`,
+          // Bumped ring stroke from 1.5 → 1.8 so the outline reads
+          // proportionally at the larger icon scale.
+          border: `1.8px solid ${item.color}`,
           backgroundColor: 'transparent',
           boxSizing: 'border-box',
         }}
@@ -101,27 +104,27 @@ function LegendBody() {
   return (
     <>
       <h2
-        className="font-display text-base font-semibold uppercase tracking-[0.25em]"
+        className="font-display text-xl font-semibold uppercase tracking-[0.25em]"
         style={{ color: STROKE }}
       >
         {t('legend.title')}
       </h2>
       <p
-        className="mt-1.5 text-[11px] uppercase tracking-[0.3em]"
+        className="mt-2 text-[13px] font-medium uppercase tracking-[0.3em]"
         style={{ color: STROKE, opacity: 0.55 }}
       >
         {t('legend.subtitle')}
       </p>
 
       <ul
-        className="mt-6 space-y-3"
-        style={{ color: STROKE, fontSize: 12.5, lineHeight: 1.55 }}
+        className="mt-7 space-y-4"
+        style={{ color: STROKE, fontSize: 15, lineHeight: 1.55, fontWeight: 500 }}
       >
         {LEGEND_ITEMS.map((item) => (
-          <li key={item.tKey} className="flex items-center gap-3.5">
+          <li key={item.tKey} className="flex items-center gap-4">
             <span
               style={{
-                width: 18,
+                width: 24,
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -138,11 +141,11 @@ function LegendBody() {
           body so it travels with both the desktop card and the mobile
           collapsible panel. */}
       <div
-        className="mt-5 h-px"
+        className="mt-6 h-px"
         style={{ backgroundColor: 'rgba(31, 58, 42, 0.18)' }}
       />
       <p
-        className="mt-3 text-[12px] font-medium italic leading-relaxed opacity-60"
+        className="mt-4 text-[14px] font-medium italic leading-relaxed opacity-60"
         style={{ color: STROKE }}
       >
         {t('legend.footnote')}
@@ -156,11 +159,14 @@ export default function Legend() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { t } = useTranslation();
 
-  // Desktop layout — original floating glass card, top-right.
+  // Desktop layout — original floating glass card, top-right. Container
+  // scaled up ~25% (w-[22rem] → w-[27rem], p-6 → p-8) to match the larger
+  // typography. Stays anchored at right-6/top-6 so it doesn't collide
+  // with the bottom-right Compass or the bottom-centre nav hint.
   if (!isMobile) {
     return (
       <div
-        className="pointer-events-none absolute right-6 top-6 z-20 w-[22rem] rounded-2xl border border-white/40 p-6 shadow-md"
+        className="pointer-events-none absolute right-6 top-6 z-20 w-[27rem] rounded-2xl border border-white/40 p-8 shadow-md"
         style={{
           backgroundColor: 'rgba(255, 255, 255, 0.35)',
           WebkitBackdropFilter: 'blur(14px) saturate(140%)',
@@ -182,7 +188,7 @@ export default function Legend() {
         onClick={() => setMobileOpen((v) => !v)}
         aria-expanded={mobileOpen}
         aria-label={mobileOpen ? t('legend.closeAria') : t('legend.openAria')}
-        className="fixed bottom-4 right-4 z-20 flex items-center gap-2 rounded-full border border-white/40 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] shadow-md"
+        className="fixed bottom-4 right-4 z-20 flex items-center gap-2 rounded-full border border-white/40 px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.22em] shadow-md"
         style={{
           backgroundColor: 'rgba(255, 255, 255, 0.7)',
           WebkitBackdropFilter: 'blur(14px) saturate(140%)',
@@ -191,7 +197,7 @@ export default function Legend() {
           marginBottom: 'env(safe-area-inset-bottom, 0px)',
         }}
       >
-        <span aria-hidden style={{ fontSize: 12 }}>
+        <span aria-hidden style={{ fontSize: 14 }}>
           {mobileOpen ? '×' : 'ⓘ'}
         </span>
         {t('legend.openMobile')}
@@ -199,7 +205,7 @@ export default function Legend() {
 
       {mobileOpen && (
         <div
-          className="fixed bottom-16 right-4 z-20 w-[78vw] max-w-[320px] rounded-2xl border border-white/40 p-5 shadow-lg"
+          className="fixed bottom-[5rem] right-4 z-20 w-[82vw] max-w-[380px] rounded-2xl border border-white/40 p-6 shadow-lg"
           style={{
             backgroundColor: 'rgba(255, 255, 255, 0.85)',
             WebkitBackdropFilter: 'blur(16px) saturate(140%)',
