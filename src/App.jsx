@@ -16,11 +16,29 @@ import { generateUrbanInsights } from './lib/urbanInsights.js';
 import { MOCK_EXPERIENCES } from './lib/mockExperiences.js';
 import { useTranslation } from './lib/translations.jsx';
 
+// `?clean` strips every UI overlay (sidebar, legend, compass, hint,
+// language toggle, intro animation) so the bare 3D map fills the screen
+// — useful for thesis-cover-style screenshots. `?clean=bare` additionally
+// hides the floating 3D landmark labels (Plaza España / Callao / etc.)
+// for a fully untouched canvas. Read once at mount and held in memo so
+// adding/removing the flag in the URL bar requires a refresh, which is
+// the right behaviour (state stays predictable mid-session).
+function readScreenshotMode() {
+  if (typeof window === 'undefined') return { clean: false, bare: false };
+  const params = new URLSearchParams(window.location.search);
+  const clean = params.has('clean');
+  const bare = clean && params.get('clean') === 'bare';
+  return { clean, bare };
+}
+
 export default function App() {
   const { t } = useTranslation();
+  const screenshot = useMemo(readScreenshotMode, []);
   const [activeTab, setActiveTab] = useState('about');
   const [vizMode, setVizMode] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
+  // Skip the intro animation when capturing a screenshot — no point
+  // waiting 6.5s just to land on the same place.
+  const [showIntro, setShowIntro] = useState(() => !screenshot.clean);
   // 'experience' = the default landing/map view. 'datamap' swaps the
   // sidebar to the Impact Report and the map to a wireframe blueprint.
   const [viewMode, setViewMode] = useState('experience');
@@ -294,59 +312,66 @@ export default function App() {
         hotspots={urbanInsights.hotspots}
         conflicts={urbanInsights.conflicts}
         activeTab={activeTab}
+        hideLandmarks={screenshot.bare}
       />
 
-      <Sidebar
-        userExperiences={userExperiences}
-        highlightedId={highlightedExperienceId}
-        placingMode={placingMode}
-        currentUserId={userId}
-        isAdmin={userIsAdmin}
-        activeTab={activeTab}
-        onChangeTab={setActiveTab}
-        onStartPlacing={handleStartPlacing}
-        onCancelPlacing={handleCancelPlacing}
-        onDeleteExperience={handleDeleteExperience}
-        currentLocation={currentLocation}
-        onClearLocation={() => setCurrentLocation(null)}
-        vizMode={vizMode}
-        onToggleViz={() => setVizMode((v) => !v)}
-        viewMode={viewMode}
-        onSwitchToDataMap={() => setViewMode('datamap')}
-        onBackToExperience={() => setViewMode('experience')}
-        insights={urbanInsights.insights}
-      />
-      {viewMode !== 'datamap' && <Legend />}
-      <Compass rotationY={ROTATION_OFFSET_Y} />
+      {!screenshot.clean && (
+        <Sidebar
+          userExperiences={userExperiences}
+          highlightedId={highlightedExperienceId}
+          placingMode={placingMode}
+          currentUserId={userId}
+          isAdmin={userIsAdmin}
+          activeTab={activeTab}
+          onChangeTab={setActiveTab}
+          onStartPlacing={handleStartPlacing}
+          onCancelPlacing={handleCancelPlacing}
+          onDeleteExperience={handleDeleteExperience}
+          currentLocation={currentLocation}
+          onClearLocation={() => setCurrentLocation(null)}
+          vizMode={vizMode}
+          onToggleViz={() => setVizMode((v) => !v)}
+          viewMode={viewMode}
+          onSwitchToDataMap={() => setViewMode('datamap')}
+          onBackToExperience={() => setViewMode('experience')}
+          insights={urbanInsights.insights}
+        />
+      )}
+      {!screenshot.clean && viewMode !== 'datamap' && <Legend />}
+      {!screenshot.clean && <Compass rotationY={ROTATION_OFFSET_Y} />}
 
       {/* Language toggle — floating pill on mobile (next to the Menu
           button); the desktop variant lives inside the sidebar header so
           it can't overlap the always-visible Legend card. */}
-      <div className="md:hidden">
-        <LanguageToggle variant="floating" />
-      </div>
+      {!screenshot.clean && (
+        <div className="md:hidden">
+          <LanguageToggle variant="floating" />
+        </div>
+      )}
 
       {/* Navigation hint — visible on both viewports, with a touch-aware
           verb swap on mobile. Sits above the map at bottom-4 and respects
           the iOS safe-area inset so it never tucks under the home bar. */}
-      <div
-        className="pointer-events-none absolute bottom-4 left-1/2 z-30 -translate-x-1/2 px-4 md:bottom-6"
-        style={{ marginBottom: 'env(safe-area-inset-bottom, 0px)' }}
-      >
-        <p
-          className="whitespace-nowrap text-[10px] font-medium uppercase italic"
-          style={{
-            color: '#1F3A2A',
-            opacity: 0.5,
-            letterSpacing: '0.3em',
-            fontFamily: '"Darker Grotesque", system-ui, sans-serif',
-          }}
+      {!screenshot.clean && (
+        <div
+          className="pointer-events-none absolute bottom-4 left-1/2 z-30 -translate-x-1/2 px-4 md:bottom-6"
+          style={{ marginBottom: 'env(safe-area-inset-bottom, 0px)' }}
         >
-          <span className="md:hidden">{t('nav.zoom.pinch')}</span>
-          <span className="hidden md:inline">{t('nav.zoom.scroll')}</span>
-          {' '}{t('nav.zoomDragSuffix')}
-        </p>
-      </div>
+          <p
+            className="whitespace-nowrap text-[10px] font-medium uppercase italic"
+            style={{
+              color: '#1F3A2A',
+              opacity: 0.5,
+              letterSpacing: '0.3em',
+              fontFamily: '"Darker Grotesque", system-ui, sans-serif',
+            }}
+          >
+            <span className="md:hidden">{t('nav.zoom.pinch')}</span>
+            <span className="hidden md:inline">{t('nav.zoom.scroll')}</span>
+            {' '}{t('nav.zoomDragSuffix')}
+          </p>
+        </div>
+      )}
 
       <ContributionPanel
         open={!!pendingPosition}

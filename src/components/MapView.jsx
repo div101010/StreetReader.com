@@ -1081,6 +1081,7 @@ export default function MapView({
   hotspots = [],
   conflicts = [],
   activeTab = 'about',
+  hideLandmarks = false,
 }) {
   const inDataMap = viewMode === 'datamap';
   // Sensory / memory / complaint pins are research data — only surface
@@ -1290,8 +1291,9 @@ export default function MapView({
           )}
         </group>
 
-        {/* Curated landmark labels — hidden in datamap mode. */}
-        {!inDataMap && <PrecisionLabels />}
+        {/* Curated landmark labels — hidden in datamap mode and when the
+            ?clean=bare screenshot flag is set. */}
+        {!inDataMap && !hideLandmarks && <PrecisionLabels />}
 
         {bbox && <FitCamera bbox={bbox} />}
 
