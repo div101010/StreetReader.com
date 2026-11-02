@@ -4,11 +4,30 @@ import { useTranslation } from '../lib/translations.jsx';
 const BEIGE = '#FAF5EB';
 const STROKE = '#1F3A2A';
 
+const MOBILE_QUERY = '(max-width: 767px)';
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia(MOBILE_QUERY).matches;
+  });
+
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_QUERY);
+    const handler = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  return isMobile;
+}
+
 // 6.5 s total: ~1.5 s enter → ~3.5 s hold → ~1.5 s exit
 // Skippable: any click, scroll, or keypress triggers an early exit.
 export default function IntroAnimation({ onComplete = () => {} }) {
   const [phase, setPhase] = useState('enter'); // 'enter' | 'hold' | 'exit'
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   // Auto-advance timeline.
   useEffect(() => {
@@ -67,7 +86,9 @@ export default function IntroAnimation({ onComplete = () => {} }) {
         className="font-display font-semibold leading-none tracking-tight"
         style={{
           color: STROKE,
-          fontSize: 'clamp(72px, 12vw, 160px)',
+          // Mobile: scale with the viewport so 320–430px phones keep
+          // clear side margins.
+          fontSize: isMobile ? 'clamp(36px, 14vw, 64px)' : 'clamp(72px, 12vw, 160px)',
           opacity: animatedIn ? 1 : 0,
           transform: animatedIn ? 'translateY(0)' : 'translateY(12px)',
           transition: 'opacity 1200ms ease-out, transform 1200ms ease-out',
@@ -80,10 +101,10 @@ export default function IntroAnimation({ onComplete = () => {} }) {
         className="mt-6 italic"
         style={{
           color: STROKE,
-          fontSize: '12px',
+          fontSize: isMobile ? 'clamp(9px, 2.8vw, 12px)' : '12px',
           fontWeight: 500,
           textTransform: 'uppercase',
-          letterSpacing: '0.4em',
+          letterSpacing: isMobile ? '0.18em' : '0.4em',
           opacity: animatedIn ? 0.65 : 0,
           transform: animatedIn ? 'translateY(0)' : 'translateY(8px)',
           transition:

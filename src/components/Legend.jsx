@@ -184,12 +184,24 @@ export default function Legend() {
   // at bottom-12 so it clears the bottom-4 "Pinch to zoom" hint.
   return (
     <>
+      {/* Transparent tap-catcher while open: any tap outside the legend
+          only closes it and never reaches the map canvas or the Menu /
+          language pills underneath. Closes on click (not pointerdown) so
+          the trailing click can't fall through to the map. */}
+      {mobileOpen && (
+        <div
+          aria-hidden
+          className="fixed inset-0 z-40"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
       <button
         type="button"
         onClick={() => setMobileOpen((v) => !v)}
         aria-expanded={mobileOpen}
         aria-label={mobileOpen ? t('legend.closeAria') : t('legend.openAria')}
-        className="fixed bottom-12 right-4 z-20 flex items-center gap-2 rounded-full border border-white/40 px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.22em] shadow-md"
+        className="fixed bottom-12 right-4 z-40 flex items-center gap-2 rounded-full border border-white/40 px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.22em] shadow-md"
         style={{
           backgroundColor: 'rgba(255, 255, 255, 0.7)',
           WebkitBackdropFilter: 'blur(14px) saturate(140%)',
@@ -206,7 +218,7 @@ export default function Legend() {
 
       {mobileOpen && (
         <div
-          className="fixed bottom-[7rem] right-4 z-20 w-[82vw] max-w-[380px] rounded-2xl border border-white/40 p-6 shadow-lg"
+          className="fixed bottom-[7rem] right-4 z-40 w-[82vw] max-w-[380px] rounded-2xl border border-white/40 p-6 shadow-lg"
           style={{
             backgroundColor: 'rgba(255, 255, 255, 0.85)',
             WebkitBackdropFilter: 'blur(16px) saturate(140%)',

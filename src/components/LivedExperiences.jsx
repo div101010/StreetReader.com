@@ -88,10 +88,10 @@ export default function LivedExperiences({
           </p>
         </div>
       ) : (
-        // Mobile: no inner scroller — cards render at full height and the
-        // whole drawer scrolls instead (see Sidebar). Desktop keeps the
-        // list as its own scroll region.
-        <ul className="space-y-3 pr-1 md:flex-1 md:overflow-y-auto">
+        // Mobile: the list is its own ~50vh scroll area (cards keep full
+        // height inside it) so the tool toggles and Platform Feedback sit
+        // right below it. Desktop keeps the list filling the panel.
+        <ul className="max-h-[50vh] space-y-3 overflow-y-auto overscroll-contain pr-1 md:max-h-none md:flex-1 md:overscroll-auto">
           {userExperiences
             .slice()
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
