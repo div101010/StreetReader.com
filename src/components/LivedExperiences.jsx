@@ -88,10 +88,10 @@ export default function LivedExperiences({
           </p>
         </div>
       ) : (
-        // Mobile: the list is its own ~50vh scroll area (cards keep full
-        // height inside it) so the tool toggles and Platform Feedback sit
-        // right below it. Desktop keeps the list filling the panel.
-        <ul className="max-h-[50vh] space-y-3 overflow-y-auto overscroll-contain pr-1 md:max-h-none md:flex-1 md:overscroll-auto">
+        // Mobile: the list is its own ~45dvh scroll area (.sr-story-list,
+        // cards keep full height inside it). Desktop keeps the list
+        // filling the panel.
+        <ul className="sr-story-list space-y-3 overflow-y-auto overscroll-contain pr-1 md:flex-1 md:overscroll-auto">
           {userExperiences
             .slice()
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -143,8 +143,10 @@ export default function LivedExperiences({
         </ul>
       )}
 
-      {/* Tool toggles — pinned to the bottom of the panel */}
-      <div className="mt-3 space-y-2 border-t border-white/30 pt-3">
+      {/* Tool toggles — pinned to the bottom of the panel on desktop. On
+          mobile `-order-1` lifts them to the top, directly under the tabs,
+          so they're visible as soon as the Experiences tab opens. */}
+      <div className="-order-1 mb-4 space-y-2 md:order-none md:mb-0 md:mt-3 md:border-t md:border-white/30 md:pt-3">
         <button
           type="button"
           onClick={onToggleViz}

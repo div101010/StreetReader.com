@@ -9,6 +9,22 @@ body,
   margin: 0;
 }
 
+/* Mobile drawer + story list: dvh so nothing hides behind the iOS
+   browser bar, with a vh fallback for older browsers. */
+.sr-mobile-drawer {
+  height: 100vh;
+  height: 100dvh;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+  .sr-story-list {
+    max-height: 45vh;
+    max-height: 45dvh;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 body {
   font-family: 'Darker Grotesque', system-ui, sans-serif;
   background-color: #faf5eb;

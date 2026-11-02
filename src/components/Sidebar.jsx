@@ -284,8 +284,11 @@ export default function Sidebar({
               backdropFilter: 'blur(4px)',
             }}
           />
+          {/* Block (not flex) so iOS Safari can't shrink the story list
+              to fit and leave the drawer with nothing to scroll. Height
+              comes from .sr-mobile-drawer (100vh → 100dvh) in index.css. */}
           <aside
-            className="fixed inset-y-0 left-0 z-30 flex w-[88vw] max-w-[420px] flex-col overflow-y-auto overscroll-contain border-r border-white/40 p-5 shadow-2xl"
+            className="sr-mobile-drawer fixed left-0 top-0 z-30 w-[88vw] max-w-[420px] overflow-y-auto overscroll-contain border-r border-white/40 p-5 shadow-2xl"
             style={{
               backgroundColor: 'rgba(255, 255, 255, 0.85)',
               WebkitBackdropFilter: 'blur(22px) saturate(140%)',
