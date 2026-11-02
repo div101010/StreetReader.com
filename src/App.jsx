@@ -42,6 +42,8 @@ export default function App() {
   // 'experience' = the default landing/map view. 'datamap' swaps the
   // sidebar to the Impact Report and the map to a wireframe blueprint.
   const [viewMode, setViewMode] = useState('experience');
+  // True only while the mobile drawer is open (always false on desktop).
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
 
@@ -335,15 +337,17 @@ export default function App() {
           onSwitchToDataMap={() => setViewMode('datamap')}
           onBackToExperience={() => setViewMode('experience')}
           insights={urbanInsights.insights}
+          onMobileOpenChange={setMobileMenuOpen}
         />
       )}
-      {!screenshot.clean && viewMode !== 'datamap' && <Legend />}
+      {!screenshot.clean && viewMode !== 'datamap' && !mobileMenuOpen && <Legend />}
       {!screenshot.clean && <Compass rotationY={ROTATION_OFFSET_Y} />}
 
       {/* Language toggle — floating pill on mobile (next to the Menu
           button); the desktop variant lives inside the sidebar header so
-          it can't overlap the always-visible Legend card. */}
-      {!screenshot.clean && (
+          it can't overlap the always-visible Legend card. Hidden while the
+          mobile drawer is open; the drawer header shows its own toggle. */}
+      {!screenshot.clean && !mobileMenuOpen && (
         <div className="md:hidden">
           <LanguageToggle variant="floating" />
         </div>
@@ -351,8 +355,9 @@ export default function App() {
 
       {/* Navigation hint — visible on both viewports, with a touch-aware
           verb swap on mobile. Sits above the map at bottom-4 and respects
-          the iOS safe-area inset so it never tucks under the home bar. */}
-      {!screenshot.clean && (
+          the iOS safe-area inset so it never tucks under the home bar.
+          Hidden while the mobile drawer is open. */}
+      {!screenshot.clean && !mobileMenuOpen && (
         <div
           className="pointer-events-none absolute bottom-4 left-1/2 z-30 -translate-x-1/2 px-4 md:bottom-6"
           style={{ marginBottom: 'env(safe-area-inset-bottom, 0px)' }}

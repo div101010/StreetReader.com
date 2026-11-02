@@ -48,6 +48,7 @@ export default function Sidebar({
   onSwitchToDataMap = () => {},
   onBackToExperience = () => {},
   insights = [],
+  onMobileOpenChange = () => {},
 }) {
   const inDataMap = viewMode === 'datamap';
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -77,18 +78,31 @@ export default function Sidebar({
     }
   }, [isMobile, mobileOpen]);
 
+  // Let App hide the floating overlays (language pill, nav hint, Legend)
+  // while the mobile drawer is open so nothing sits on top of it.
+  useEffect(() => {
+    onMobileOpenChange(isMobile && mobileOpen);
+  }, [isMobile, mobileOpen, onMobileOpenChange]);
+
   const showAside = !isMobile || mobileOpen;
 
   const sidebarBody = (
     <>
       <header className="mb-5 flex items-start justify-between gap-3">
-        <h1 className="font-display text-4xl font-semibold leading-none tracking-tight text-brand-green sm:text-5xl">
-          StreetReader
-        </h1>
+        <div>
+          <h1 className="font-display text-4xl font-semibold leading-none tracking-tight text-brand-green sm:text-5xl">
+            StreetReader
+          </h1>
+          {/* Mobile: inline EN | ES under the title while the drawer is
+              open (the floating pill from App.jsx hides then). */}
+          {isMobile && (
+            <div className="mt-3">
+              <LanguageToggle variant="inline" />
+            </div>
+          )}
+        </div>
         <div className="flex flex-shrink-0 items-center gap-3">
-          {/* Desktop: inline EN | ES toggle in the header. Mobile: rendered
-              from App.jsx as a floating pill so it stays reachable when the
-              drawer is closed. */}
+          {/* Desktop: inline EN | ES toggle in the header. */}
           {!isMobile && <LanguageToggle variant="inline" />}
           {isMobile && (
             <button
@@ -161,7 +175,9 @@ export default function Sidebar({
         </nav>
       )}
 
-      <div className="flex-1 overflow-hidden">
+      {/* Mobile: content takes its natural height and the drawer itself
+          scrolls, so story cards are never clipped. */}
+      <div className={isMobile ? '' : 'flex-1 overflow-hidden'}>
         {inDataMap ? (
           <ImpactReport insights={insights} onBack={onBackToExperience} />
         ) : (
@@ -269,7 +285,7 @@ export default function Sidebar({
             }}
           />
           <aside
-            className="fixed inset-y-0 left-0 z-30 flex w-[88vw] max-w-[420px] flex-col border-r border-white/40 p-5 shadow-2xl"
+            className="fixed inset-y-0 left-0 z-30 flex w-[88vw] max-w-[420px] flex-col overflow-y-auto overscroll-contain border-r border-white/40 p-5 shadow-2xl"
             style={{
               backgroundColor: 'rgba(255, 255, 255, 0.85)',
               WebkitBackdropFilter: 'blur(22px) saturate(140%)',

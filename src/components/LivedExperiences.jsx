@@ -42,7 +42,7 @@ export default function LivedExperiences({
   const isEmpty = userExperiences.length === 0;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col md:h-full">
       <p className="mb-3 text-xs italic leading-snug text-brand-green/65">
         {t('lived.tapHint')}
       </p>
@@ -88,7 +88,10 @@ export default function LivedExperiences({
           </p>
         </div>
       ) : (
-        <ul className="flex-1 space-y-3 overflow-y-auto pr-1">
+        // Mobile: no inner scroller — cards render at full height and the
+        // whole drawer scrolls instead (see Sidebar). Desktop keeps the
+        // list as its own scroll region.
+        <ul className="space-y-3 pr-1 md:flex-1 md:overflow-y-auto">
           {userExperiences
             .slice()
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -123,7 +126,7 @@ export default function LivedExperiences({
                     </span>
                   </div>
                   <p className="mt-2 text-sm leading-snug text-brand-green/85">
-                    "{s.text}"
+                    “{s.text}”
                   </p>
                   {canDelete && (
                     <button

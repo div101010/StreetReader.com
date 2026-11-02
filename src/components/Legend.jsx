@@ -180,7 +180,8 @@ export default function Legend() {
 
   // Mobile — small "Legend" pill in the bottom-right that expands into
   // a compact panel anchored above it. Keeps the narrow viewport
-  // uncluttered until the user explicitly asks for the key.
+  // uncluttered until the user explicitly asks for the key. The pill sits
+  // at bottom-12 so it clears the bottom-4 "Pinch to zoom" hint.
   return (
     <>
       <button
@@ -188,7 +189,7 @@ export default function Legend() {
         onClick={() => setMobileOpen((v) => !v)}
         aria-expanded={mobileOpen}
         aria-label={mobileOpen ? t('legend.closeAria') : t('legend.openAria')}
-        className="fixed bottom-4 right-4 z-20 flex items-center gap-2 rounded-full border border-white/40 px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.22em] shadow-md"
+        className="fixed bottom-12 right-4 z-20 flex items-center gap-2 rounded-full border border-white/40 px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.22em] shadow-md"
         style={{
           backgroundColor: 'rgba(255, 255, 255, 0.7)',
           WebkitBackdropFilter: 'blur(14px) saturate(140%)',
@@ -205,7 +206,7 @@ export default function Legend() {
 
       {mobileOpen && (
         <div
-          className="fixed bottom-[5rem] right-4 z-20 w-[82vw] max-w-[380px] rounded-2xl border border-white/40 p-6 shadow-lg"
+          className="fixed bottom-[7rem] right-4 z-20 w-[82vw] max-w-[380px] rounded-2xl border border-white/40 p-6 shadow-lg"
           style={{
             backgroundColor: 'rgba(255, 255, 255, 0.85)',
             WebkitBackdropFilter: 'blur(16px) saturate(140%)',
